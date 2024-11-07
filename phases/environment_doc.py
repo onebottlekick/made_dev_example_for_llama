@@ -23,15 +23,13 @@ As the {assistant_role}, you should write a requirements.txt file, which is comm
 to specify the dependencies or packages required for the project to run properly. \
 It serves as a way to document and manage the project's dependencies in a standardized format. For example:
 
-requirements.txt
-```
-numpy==1.19.2
-pandas>=1.1.4
-```
+numpy==1.23.0
+pytorch==2.1.0
 
 According to the codes and file format listed above, write a requirements.txt file to specify the dependencies or packages required for the project to run properly.
 You MUST put response in the format above.
-You SHOULD NOT include any other texts in response.
+You SHOULD NOT include any other texts in response except for requirements.
+If no packages are needed, just response <INFO>None
 """
 
 
@@ -68,8 +66,8 @@ class EnvironmentDoc(BasePhaseRepositoryImpl):
         assistant_role_prompt=ASSISTANT_ROLE_PROMPT,
         user_role_name="Product Owner",
         user_role_prompt=USER_ROLE_PROMPT,
-        chat_turn_limit=3,
-        conversation_rag=True,
+        chat_turn_limit=1,
+        conversation_rag=False,
         temperature=0.5,
         top_p=1.0,
         states=PhaseStates(),
@@ -96,10 +94,8 @@ class EnvironmentDoc(BasePhaseRepositoryImpl):
         self.states.raw_codes = env.states.raw_codes
 
     def update_env_states(self, env):
-        contents = FileToolRepositoryImpl.abstract_contents_from_text(
-            self.seminar_conclusion, regex=r"(.+?)\n```.*?\n(.*?)```"
-        )
-        for k, v in contents.items():
-            env.states.requirements[k] = v
-            FileToolRepositoryImpl.write_file(os.path.join(env.config.directory, k), v)
+        requirements = self.seminar_conclusion
+        if "None" not in requirements:
+            FileToolRepositoryImpl.write_file(os.path.join(env.config.directory, "requirements.txt"), requirements)
+            env.states.requirements = requirements.split("\n")
         return env

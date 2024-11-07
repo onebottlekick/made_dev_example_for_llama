@@ -43,15 +43,16 @@ Now, you should check the above regulations one by one and review the sprint goa
 propose one comment with the highest priority about them, and \
 give me instructions on how to fix to ensure the sprint backlog aligns well with the regulations above. \
 You should modify corresponding product backlog according to the comments.
-You MUST reponse in format below:
+You MUST reponse in format below. You MUST use the exact title in the format:
 
 **Sprint Backlog:**
 $sprint_backlog
-**Acceptance Criteria:**
-$acceptance_criteria
+**Sprint Acceptance Criteria:**
+$sprint_acceptance_criteria
 
 You SHOULD ONLY answer sprint backlog, sprint acceptance criteria in numbered list.
-If the sprint goals and sprint backlog are perfect and you have no comment on them, SHOULD ONLY return one line like "<INFO> Finished".
+You SHOULD NOT response any other texts except for the sprint backlog and sprint acceptance criteria.
+If the sprint backlog and sprint acceptance criteria are perfect and you have no comment on them, SHOULD ONLY return one line like "<INFO> Finished".
 """
 
 
@@ -116,10 +117,33 @@ class SprintBacklogModification(BasePhaseRepositoryImpl):
         self.states.plain_product_backlog = "\n".join(env.states.product_backlog)
         self.states.product_acceptance_criteria = "\n".join(env.states.product_acceptance_criteria)
         self.states.product_backlog_comments = env.states.product_backlog_comments
-        self.states.current_sprint_acceptance_criteria = "\n".join(env.states.current_sprint_acceptance_criteria)
-        self.states.current_sprint_goals = "\n".join(env.states.current_sprint_goals)
-        self.states.current_sprint_backlog = "\n".join(env.states.current_sprint_backlog)
+        self.states.current_sprint_goals = "\n".join(env.states.all_sprint_goals[-1])
+        self.states.current_sprint_backlog = "\n".join(env.states.all_sprint_backlog[-1])
+        self.states.current_sprint_acceptance_criteria = "\n".join(env.states.all_sprint_acceptance_criteria[-1])
 
     def update_env_states(self, env):
-        print(self.seminar_conclusion)
+        modified_info = self.seminar_conclusion
+        if "Finished" in modified_info:
+            return env
+        
+        product_backlog_text = (
+            self.seminar_conclusion.split("**Sprint Backlog:**")[1]
+            .split("**Sprint Acceptance Criteria:**")[0]
+            .strip()
+        )
+        acceptance_criteria_text = self.seminar_conclusion.split(
+            "**Sprint Acceptance Criteria:**"
+        )[1].strip()
+
+        product_backlog = [
+            item.strip() for item in product_backlog_text.split("\n") if item.strip()
+        ]
+
+        acceptance_criteria = [
+            item.strip()
+            for item in acceptance_criteria_text.split("\n")
+            if item.strip()
+        ]
+        env.states.all_sprint_backlog[-1] = product_backlog
+        env.states.all_sprint_acceptance_criteria[-1] = acceptance_criteria
         return env

@@ -3,6 +3,7 @@ from made.phase.repository.base_phase_repository_impl import BasePhaseRepository
 from made.tools.docker.repository.docker_tool_repository_impl import (
     DockerToolRepositoryImpl,
 )
+from made.tools.file.repository.file_tool_repository_impl import FileToolRepositoryImpl
 
 from states.phase_states import PhaseStates
 
@@ -25,7 +26,7 @@ As the {assistant_role}, to satisfy the new user's demand and make the software 
 you MUST modify the codes based on the error summary.
 Now, use the format exemplified above and modify the problematic codes based on the error summary. \
 If you cannot find the assets from the existing paths, you should consider remove relevant code and features. \
-Output the codes that you fixed based on the test reported and corresponding explanations. \
+Fix the codes and Output all the codes that you fixed or not, based on the test reported and corresponding explanations. \
 You MUST follow the format defined below, including $file_name, $language, $doc_string and $code
 You SHOULD NOT response incomplete TODO codes.
 
@@ -37,6 +38,8 @@ $doc_string
 $code
 ```
 
+You MUST response all the codes put in format above.
+You SHOULD NOT contain any other text execpt for code.
 If no bugs are reported, please return only one line like "<INFO> Finished".
 """
 
@@ -94,7 +97,14 @@ class TestModification(BasePhaseRepositoryImpl):
         )
 
     def update_phase_states(self, env):
-        pass
+        self.states.language = env.states.language
+        self.states.raw_codes = env.states.raw_codes
+        self.states.test_reports = env.states.test_reports[-1]
+        self.states.error_summary = env.states.error_summary[-1]
 
     def update_env_states(self, env):
+        modified_code = self.seminar_conclusion
+        if "Finished" in modified_code:
+            return env
+        env.states.raw_codes = modified_code
         return env

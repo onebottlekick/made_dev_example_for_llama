@@ -27,7 +27,7 @@ Your answer MUST strictly obeys the following format:
 **Sprint Goals:**
 $sprint_goals
 **Sprint Backlog:**
-$sprint_backlogs
+$sprint_backlog
 **Sprint Acceptance Criteria:**
 $sprint_acceptance_criteria
 ###
@@ -35,13 +35,15 @@ $sprint_acceptance_criteria
 **Sprint Goals:**
 $sprint_goals
 **Sprint Backlog:**
-$sprint_backlogs
+$sprint_backlog
 **Sprint Acceptance Criteria:**
 $sprint_acceptance_criteria
 ###
 
-where $SPRINT_GOALS are the goals of the sprint, and $SPRINT_BACKLOG is the sprint backlog whose items are from the product backlog. \
-You must ensure that $SPRINT_GOALS and $SPRINT_BACKLOG must not be empty and $SPRINT_BACKLOG aligns with $SPRINT_GOALS.
+where $sprint_goals are the goals of the sprint, and $sprint_backlog is the sprint backlog whose items are from the product backlog, \
+$sprint_acceptance_criteria is the sprint acceptance criteria that satisfy sprint backlog.
+You must ensure that $sprint_goals and $sprint_backlog, $sprint_acceptance_criteria SHOULD NOT be empty and \
+$sprint_acceptance_criteria aligns with $sprint_backlog and $sprint_backlog aligns with $sprint_goals.
 As the Product Owner, you must create the first sprint and adhere to the following regulations:
 1) considering the proficiency of the members, all the tasks are feasible and finished by at least one member,
 2) the sprint backlog must not include enhanced features like AI, animations and sound effects,
@@ -116,7 +118,7 @@ class SprintBacklogCreate(BasePhaseRepositoryImpl):
 
     def update_env_states(self, env):
         sprint_results = self.seminar_conclusion
-        sprint_results = sprint_results.split("###")
+        sprint_results = sprint_results.split("###")[:-1]
         for sprint_result in sprint_results:
             sprint_goals_text = (
                 sprint_result.split("**Sprint Goals:**")[1]
@@ -131,26 +133,27 @@ class SprintBacklogCreate(BasePhaseRepositoryImpl):
             sprint_acceptance_criteria_text = sprint_result.split(
                 "**Sprint Acceptance Criteria:**"
             )[1].strip()
+            
             sprint_goals = [
                 item.strip() for item in sprint_goals_text.split("\n") if item.strip()
             ]
+            env.states.all_sprint_goals.append(sprint_goals)
+            
             sprint_backlog = [
                 item.strip() for item in sprint_backlog_text.split("\n") if item.strip()
             ]
+            env.states.all_sprint_backlog.append(sprint_backlog)
+            
             sprint_acceptance_criteria = [
                 item.strip()
                 for item in sprint_acceptance_criteria_text.split("\n")
                 if item.strip()
             ]
+            env.states.all_sprint_acceptance_criteria.append(sprint_acceptance_criteria)
 
-        env.states.all_sprint_goals.append(sprint_goals)
-        env.states.current_sprint_goals = sprint_goals
-
-        env.states.all_sprint_backlog.append(sprint_backlog)
-        env.states.current_sprint_backlog = sprint_backlog
-
-        env.states.all_sprint_acceptance_criteria.append(sprint_acceptance_criteria)
-        env.states.current_sprint_acceptance_criteria = sprint_acceptance_criteria
+        env.states.current_sprint_goals = "\n".join(env.states.all_sprint_goals[0])
+        env.states.current_sprint_backlog = "\n".join(env.states.all_sprint_backlog[0])
+        env.states.current_sprint_acceptance_criteria = "\n".join(env.states.all_sprint_acceptance_criteria[0])
 
         env.states.num_sprints += 1
 

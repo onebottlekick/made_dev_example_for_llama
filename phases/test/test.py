@@ -17,9 +17,10 @@ class Test(BaseComposedPhaseRepositoryImpl):
             "TestModification",
             "CodeFormatting",
             "TestErrorSummary",
+            "TestModification",
         ],
         states=PhaseStates(),
-        num_cycle=5,
+        num_cycle=2,
     ):
         super().__init__(
             model_config=model_config, phases=phases, states=states, num_cycle=num_cycle

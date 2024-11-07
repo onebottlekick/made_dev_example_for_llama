@@ -107,19 +107,16 @@ class SprintReview(BasePhaseRepositoryImpl):
         self.states.modality = env.states.modality
         self.states.language = env.states.language
         self.states.raw_codes = env.states.raw_codes
-        self.states.current_sprint_goals = "\n".join(env.states.current_sprint_goals)
-        self.states.current_sprint_backlog = "\n".join(env.states.current_sprint_backlog)
-        self.states.current_sprint_acceptance_criteria = "\n".join(env.states.current_sprint_acceptance_criteria)
+        self.states.current_sprint_goals = "\n".join(env.states.all_sprint_goals[-1])
+        self.states.current_sprint_backlog = "\n".join(env.states.all_sprint_backlog[-1])
+        self.states.current_sprint_acceptance_criteria = "\n".join(env.states.all_sprint_acceptance_criteria[-1])
         self.states.raw_codes = env.states.raw_codes
-        self.states.test_reports = env.states.test_reports
-        self.states.error_summary = env.states.error_summary
+        self.states.test_reports = env.states.test_reports[-1]
+        self.states.error_summary = env.states.error_summary[-1]
 
     def update_env_states(self, env):
         done_works = self.seminar_conclusion.split("Done Work:")[-1].split("Undone Work:")[0].split("\n")
         env.states.done_works = [done_work for done_work in done_works if done_works]
         undone_works = self.seminar_conclusion.split("Undone Work:")[-1].split("\n")
         env.states.undone_works = [undone_work for undone_work in undone_works if undone_work]
-        print('#'*40)
-        print(self.seminar_conclusion)
-        print('#'*40)
         return env

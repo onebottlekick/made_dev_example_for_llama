@@ -25,8 +25,6 @@ Requirements:
 As the {assistant_role}, by using Markdown, you should write a manual.md file which is a detailed user manual to use the software, \
 including introducing main functions of the software, how to install environment dependencies and how to use/play it. For example:
 
-README.md
-```
 # LangChain
 Building applications with LLMs through composability
 Looking for the JS/TS version? Check out LangChain.js.
@@ -53,7 +51,8 @@ Please see [here](https://python.langchain.com) for full documentation on:
 - How-To examples (demos, integrations, helper functions)
 - Reference (full API docs)
 - Resources (high-level explanation of core concepts)
-```
+
+You SHOULD NOT include any other texts in response except for contents of manual.
 """
 
 
@@ -90,8 +89,8 @@ class Manual(BasePhaseRepositoryImpl):
         assistant_role_prompt=ASSISTANT_ROLE_PROMPT,
         user_role_name="Product Owner",
         user_role_prompt=USER_ROLE_PROMPT,
-        chat_turn_limit=3,
-        conversation_rag=True,
+        chat_turn_limit=1,
+        conversation_rag=False,
         temperature=0.5,
         top_p=1.0,
         states=PhaseStates(),
@@ -116,13 +115,10 @@ class Manual(BasePhaseRepositoryImpl):
         self.states.modality = env.states.modality
         self.states.language = env.states.language
         self.states.raw_codes = env.states.raw_codes
-        self.states.requirements = "\n".join(env.states.requirements.values()[0])
+        self.states.requirements = "\n".join(env.states.requirements)
 
     def update_env_states(self, env):
-        contents = FileToolRepositoryImpl.abstract_contents_from_text(
-            self.seminar_conclusion, regex=r"(.+?)\n```.*?\n(.*?)```"
-        )
-        for k, v in contents.items():
-            env.states.manual[k] = v
-            FileToolRepositoryImpl.write_file(os.path.join(env.config.directory, k), v)
+        manual = self.seminar_conclusion
+        FileToolRepositoryImpl.write_file(os.path.join(env.config.directory, "README.md"), manual)
+        env.states.manual = manual
         return env

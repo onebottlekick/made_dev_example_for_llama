@@ -13,7 +13,7 @@ class CodeReview(BaseComposedPhaseRepositoryImpl):
         model_config,
         phases=["CodeReviewComment", "CodeReviewModification", "CodeFormatting"],
         states=PhaseStates(),
-        num_cycle=3,
+        num_cycle=1,
     ):
         super().__init__(
             model_config=model_config, phases=phases, states=states, num_cycle=num_cycle

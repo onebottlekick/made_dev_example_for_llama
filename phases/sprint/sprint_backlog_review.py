@@ -105,9 +105,9 @@ class SprintBacklogReview(BasePhaseRepositoryImpl):
         self.states.language = env.states.language
         self.states.product_backlog = "\n".join(env.states.product_backlog)
         self.states.product_acceptance_criteria = "\n".join(env.states.product_acceptance_criteria)
-        self.states.current_sprint_goals = "\n".join(env.states.current_sprint_goals)
-        self.states.current_sprint_backlog = "\n".join(env.states.current_sprint_backlog)
-        self.states.current_sprint_acceptance_criteria = "\n".join(env.states.current_sprint_acceptance_criteria)
+        self.states.current_sprint_goals = "\n".join(env.states.all_sprint_goals[-1])
+        self.states.current_sprint_backlog = "\n".join(env.states.all_sprint_backlog[-1])
+        self.states.current_sprint_acceptance_criteria = "\n".join(env.states.all_sprint_acceptance_criteria[-1])
 
     def update_env_states(self, env):
         env.states.sprint_backlog_comments = self.seminar_conclusion

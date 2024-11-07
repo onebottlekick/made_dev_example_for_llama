@@ -102,7 +102,7 @@ class TestErrorSummary(BasePhaseRepositoryImpl):
                 if process.poll() is None:
                     os.kill(process.pid, signal.CTRL_BREAK_EVENT)
         output = process.stderr.read().decode("utf-8")
-        if exit_code != 0:
+        if exit_code != 0 and "Traceback" in output:
             self.states.test_reports = output
             if self.conversation_logging:
                 from made.utils.logger import Logger
@@ -118,6 +118,6 @@ class TestErrorSummary(BasePhaseRepositoryImpl):
         self.states.raw_codes = env.states.raw_codes
 
     def update_env_states(self, env):
-        env.states.error_summary = self.seminar_conclusion
-        env.states.test_reports = self.states.test_reports
+        env.states.error_summary.append(self.seminar_conclusion)
+        env.states.test_reports.append(self.states.test_reports)
         return env

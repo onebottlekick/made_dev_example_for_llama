@@ -102,10 +102,10 @@ class CodeReviewModification(BasePhaseRepositoryImpl):
         self.states.modality = env.states.modality
         self.states.language = env.states.language
         self.states.raw_codes = env.states.raw_codes
-        self.states.current_sprint_goals = env.states.current_sprint_goals
-        self.states.current_sprint_backlog = env.states.current_sprint_backlog
-        self.states.current_sprint_acceptance_criteria = env.states.current_sprint_acceptance_criteria
-        self.states.review_comments = env.states.review_comments
+        self.states.current_sprint_goals = "\n".join(env.states.all_sprint_goals[-1])
+        self.states.current_sprint_backlog = "\n".join(env.states.all_sprint_backlog[-1])
+        self.states.current_sprint_acceptance_criteria = "\n".join(env.states.all_sprint_acceptance_criteria[-1])
+        self.states.review_comments = env.states.review_comments[-1]
 
     def update_env_states(self, env):
         env.states.raw_codes = self.seminar_conclusion

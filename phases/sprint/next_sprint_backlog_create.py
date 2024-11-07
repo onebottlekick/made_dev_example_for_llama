@@ -34,11 +34,11 @@ You MUST meticulously consider undone tasks when creating the next sprint. Think
 Importantly, when done tasks are exactly the product backlog, just return a single line with the content: "<INFO> DONE." and do nothing.
 You must create a next sprint backlog and MUST strictly obeys the following format:
 
-Sprint Goals:
+**Sprint Goals:**
 $sprint_goals
-Sprint Backlog:
-$sprint_backlog
-Sprint acceptance Criteria:
+**Sprint Backlog:**
+$sprint_backlogs
+**Sprint Acceptance Criteria:**
 $sprint_acceptance_criteria
 
 where $sprint_goals are the goals of the sprint, and $sprint_backlog is the sprint backlog whose items are from the product backlog, \
@@ -117,42 +117,42 @@ class NextSprintBacklogCreate(BasePhaseRepositoryImpl):
         self.states.undone_works = "\n".join(env.states.undone_works)
 
     def update_env_states(self, env):
-        sprint_results = self.seminar_conclusion
-        sprint_results = sprint_results.split("###")
-        for sprint_result in sprint_results:
-            sprint_goals_text = (
-                sprint_result.split("**Sprint Goals:**")[1]
-                .split("**Sprint Backlog:**")[0]
-                .strip()
-            )
-            sprint_backlog_text = (
-                sprint_result.split("**Sprint Backlog:**")[1]
-                .split("**Sprint Acceptance Criteria:**")[0]
-                .strip()
-            )
-            sprint_acceptance_criteria_text = sprint_result.split(
-                "**Sprint Acceptance Criteria:**"
-            )[1].strip()
-            sprint_goals = [
-                item.strip() for item in sprint_goals_text.split("\n") if item.strip()
-            ]
-            sprint_backlog = [
-                item.strip() for item in sprint_backlog_text.split("\n") if item.strip()
-            ]
-            sprint_acceptance_criteria = [
-                item.strip()
-                for item in sprint_acceptance_criteria_text.split("\n")
-                if item.strip()
-            ]
-
+        sprint_result = self.seminar_conclusion
+        # sprint_results = sprint_results.split("###")
+        sprint_goals_text = (
+            sprint_result.split("**Sprint Goals:**")[1]
+            .split("**Sprint Backlog:**")[0]
+            .strip()
+        )
+        sprint_backlog_text = (
+            sprint_result.split("**Sprint Backlog:**")[1]
+            .split("**Sprint Acceptance Criteria:**")[0]
+            .strip()
+        )
+        sprint_acceptance_criteria_text = sprint_result.split(
+            "**Sprint Acceptance Criteria:**"
+        )[1].strip()
+        
+        sprint_goals = [
+            item.strip() for item in sprint_goals_text.split("\n") if item.strip()
+        ]
         env.states.all_sprint_goals.append(sprint_goals)
-        env.states.current_sprint_goals = sprint_goals
-
+        
+        sprint_backlog = [
+            item.strip() for item in sprint_backlog_text.split("\n") if item.strip()
+        ]
         env.states.all_sprint_backlog.append(sprint_backlog)
-        env.states.current_sprint_backlog = sprint_backlog
-
+        
+        sprint_acceptance_criteria = [
+            item.strip()
+            for item in sprint_acceptance_criteria_text.split("\n")
+            if item.strip()
+        ]
         env.states.all_sprint_acceptance_criteria.append(sprint_acceptance_criteria)
-        env.states.current_sprint_acceptance_criteria = sprint_acceptance_criteria
+
+        self.states.current_sprint_goals = "\n".join(env.states.all_sprint_goals[-1])
+        self.states.current_sprint_backlog = "\n".join(env.states.all_sprint_backlog[-1])
+        self.states.current_sprint_acceptance_criteria = "\n".join(env.states.all_sprint_acceptance_criteria[-1])
 
         env.states.num_sprints += 1
 
