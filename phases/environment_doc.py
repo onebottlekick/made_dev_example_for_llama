@@ -98,4 +98,5 @@ class EnvironmentDoc(BasePhaseRepositoryImpl):
         if "None" not in requirements:
             FileToolRepositoryImpl.write_file(os.path.join(env.config.directory, "requirements.txt"), requirements)
             env.states.requirements = requirements.split("\n")
+            env.states.codes["reqirements.txt"] = env.states.requirements
         return env

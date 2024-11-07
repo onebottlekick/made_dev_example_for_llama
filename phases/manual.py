@@ -121,4 +121,5 @@ class Manual(BasePhaseRepositoryImpl):
         manual = self.seminar_conclusion
         FileToolRepositoryImpl.write_file(os.path.join(env.config.directory, "README.md"), manual)
         env.states.manual = manual
+        env.states.codes["README.md"] = env.states.manual
         return env
