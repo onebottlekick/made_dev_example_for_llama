@@ -40,8 +40,7 @@ As the {assistant_role}, to make the software directly operable without further 
 9) prohibitively put code in a try-exception in the main.py
 10) most importantly, do not only check the errors in the code, but also the logic of code. \
 Make sure that user can interact with generated software without losing any feature in the requirement
-Now, you should check the above regulations one by one and review the codes in detail, and give me instructions on how to fix. \
-If the codes are perfect and you have no comment on them, you MUST only return one line like "<INFO> Finished".
+Now, you should check the above regulations one by one and review the codes in detail, and give me instructions on how to fix.
 """
 
 
